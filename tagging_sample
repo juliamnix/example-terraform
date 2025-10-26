@@ -1,0 +1,26 @@
+name: Infracost Tagging Policy
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  infracost:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v3
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: Run Infracost breakdown
+        run: infracost breakdown --path=. --format=json --out-file=infracost.json
+
+      - name: Run policy check
+        run: infracost policy --path=infracost
